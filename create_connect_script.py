@@ -73,20 +73,23 @@ def create_connect_info_file(filename, ssid, passphrase):
     return filename
 
 def create_connect_script(interface, filename):
-    if not filename.endswith(".sh"):
-        filename += ".sh"
+    if not filename.endswith(".conf"):
+        conf_filename = filename + ".conf"
 
-    o = open(filename, "w")
+    if not filename.endswith(".sh"):
+        script_filename = filename + ".sh"
+
+    o = open(script_filename, "w")
     o.write("#!/bin/bash\n")
     o.write("ip link set %s up\n" % interface)
-    o.write("wpa_supplicant -B -D nl80211 -c %s -i %s\n" % (filename, interface))
+    o.write("wpa_supplicant -B -D nl80211 -c %s -i %s\n" % (conf_filename, interface))
     o.write("dhcpcd -A %s\n" % interface)
     o.close()
 
     # Chmod 700 <filename>
-    os.chmod(filename, 448)
+    os.chmod(script_filename, 448)
 
-    return filename
+    return script_filename
 
 if __name__ == "__main__":
     args = argparser.parse_args()
