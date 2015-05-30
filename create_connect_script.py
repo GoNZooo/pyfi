@@ -55,7 +55,15 @@ argparser.add_argument(
         default = defaults.script_dir,
         required = False,
         type = str,
-        help = "Directory to put files in.")
+        help = "Directory to put script files in.")
+
+argparser.add_argument(
+        "-d", "--datafile_dir",
+        dest = "data_dir",
+        default = defaults.data_dir,
+        required = False,
+        type = str,
+        help = "Directory to put data files in.")
 
 def create_connect_info_file(data_filename, ssid, passphrase):
     if not data_filename.endswith(".conf"):
@@ -80,9 +88,9 @@ def create_connect_script(interface, script_filename, data_filename):
 
     o = open(script_filename, "w")
     o.write("#!/bin/bash\n")
-    o.write("ip link set %s up\n" % interface)
-    o.write("wpa_supplicant -B -D nl80211 -c %s -i %s\n" % (data_filename, interface))
-    o.write("dhcpcd -A %s\n" % interface)
+    o.write("sudo ip link set %s up\n" % interface)
+    o.write("sudo wpa_supplicant -B -D nl80211 -c %s -i %s\n" % (data_filename, interface))
+    o.write("sudo dhcpcd -A %s\n" % interface)
     o.close()
 
     # Chmod 700 <filename>
