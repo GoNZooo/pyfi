@@ -72,7 +72,6 @@ def create_connect_info_file(data_filename, ssid, passphrase):
         data_filename += ".conf"
 
     o = open(data_filename, "w")
-
     wpa_supplicant_output = subprocess.Popen(
             ["wpa_passphrase", ssid, passphrase],
             stdout=subprocess.PIPE).communicate()[0].decode()
