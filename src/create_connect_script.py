@@ -8,6 +8,7 @@ import argparse
 import sys
 import subprocess
 import os
+import pystache
 
 # Local file, exports:
 #     'interface' = default WLAN interface
@@ -15,6 +16,7 @@ import os
 #     'script_dir' = default directory for script and connect data files
 import defaults
 
+pystache_renderer = pystache.Renderer()
 argparser = argparse.ArgumentParser(description = "Creates a new connect script")
 
 argparser.add_argument(
@@ -70,8 +72,13 @@ def create_connect_info_file(data_filename, ssid, passphrase):
         data_filename += ".conf"
 
     o = open(data_filename, "w")
-    o.write("ctrl_interface=DIR=/run/wpa_supplicant\n")
-    o.write(subprocess.Popen(["wpa_passphrase", ssid, passphrase], stdout=subprocess.PIPE).communicate()[0].decode())
+
+    wpa_supplicant_output = subprocess.Popen(
+            ["wpa_passphrase", ssid, passphrase],
+            stdout=subprocess.PIPE).communicate()[0].decode()
+    o.write(pystache_renderer.render_path(
+        'templates/data.mustache',
+        {'wpa_supplicant_output':wpa_supplicant_output}))
     o.close()
 
     # Chmod 600 <filename>
@@ -87,10 +94,9 @@ def create_connect_script(interface, script_filename, data_filename):
         script_filename += ".sh"
 
     o = open(script_filename, "w")
-    o.write("#!/bin/bash\n")
-    o.write("sudo ip link set %s up\n" % interface)
-    o.write("sudo wpa_supplicant -B -D nl80211 -c %s -i %s\n" % (data_filename, interface))
-    o.write("sudo dhcpcd -A %s\n" % interface)
+    o.write(pystache_renderer.render_path(
+        'templates/script.mustache',
+        {'interface':interface, 'data_filename':data_filename}))
     o.close()
 
     # Chmod 700 <filename>
