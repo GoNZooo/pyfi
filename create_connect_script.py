@@ -101,8 +101,14 @@ def create_connect_script(interface, script_filename, data_filename):
 if __name__ == "__main__":
     args = argparser.parse_args()
 
-    script_filepath = args.script_dir + args.outfile
-    data_filepath = args.data_dir + args.outfile
+    if not args.script_dir.endswith("/"):
+        script_filepath = args.script_dir + "/" + args.outfile
+    else:
+        script_filepath = args.script_dir + args.outfile
+    if not args.data_dir.endswith("/"):
+        data_filepath = args.data_dir + "/"  + args.outfile
+    else:
+        data_filepath = args.data_dir + args.outfile
 
     ci_file = create_connect_info_file(data_filepath, args.ssid, args.passphrase)
     cs_file = create_connect_script(args.interface, script_filepath, data_filepath)
