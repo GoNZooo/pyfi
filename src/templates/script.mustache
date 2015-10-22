@@ -1,0 +1,5 @@
+#!/bin/bash
+sudo ip link set {{interface}} up
+sudo wpa_supplicant -B -D nl80211 -c {{data_filename}} -i {{interface}}
+sudo dhcpcd -A {{interface}}
+
