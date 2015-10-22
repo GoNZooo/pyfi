@@ -71,14 +71,13 @@ def create_connect_info_file(data_filename, ssid, passphrase):
     if not data_filename.endswith(".conf"):
         data_filename += ".conf"
 
-    o = open(data_filename, "w")
-    wpa_supplicant_output = subprocess.Popen(
-            ["wpa_passphrase", ssid, passphrase],
-            stdout=subprocess.PIPE).communicate()[0].decode()
-    o.write(pystache_renderer.render_path(
-        'templates/data.mustache',
-        {'wpa_supplicant_output':wpa_supplicant_output}))
-    o.close()
+    with open(data_filename, "w") as o:
+        wpa_supplicant_output = subprocess.Popen(
+                ["wpa_passphrase", ssid, passphrase],
+                stdout=subprocess.PIPE).communicate()[0].decode()
+        o.write(pystache_renderer.render_path(
+            'templates/data.mustache',
+            {'wpa_supplicant_output':wpa_supplicant_output}))
 
     # Chmod 600 <filename>
     os.chmod(data_filename, 384)
@@ -92,11 +91,10 @@ def create_connect_script(interface, script_filename, data_filename):
     if not script_filename.endswith(".sh"):
         script_filename += ".sh"
 
-    o = open(script_filename, "w")
-    o.write(pystache_renderer.render_path(
-        'templates/script.mustache',
-        {'interface':interface, 'data_filename':data_filename}))
-    o.close()
+    with open(script_filename, "w") as o:
+        o.write(pystache_renderer.render_path(
+            'templates/script.mustache',
+            {'interface':interface, 'data_filename':data_filename}))
 
     # Chmod 700 <filename>
     os.chmod(script_filename, 448)
