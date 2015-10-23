@@ -10,11 +10,12 @@ import subprocess
 import os
 import pystache
 
+if os.path.isfile("./defaults.py"):
 # Local file, exports:
 #     'interface' = default WLAN interface
 #     'data_dir' = default directory for script and connect data files
 #     'script_dir' = default directory for script and connect data files
-import defaults
+    import defaults
 
 pystache_renderer = pystache.Renderer()
 argparser = argparse.ArgumentParser(description = "Creates a new connect script")
