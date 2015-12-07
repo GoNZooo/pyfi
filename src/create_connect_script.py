@@ -11,62 +11,62 @@ import os
 import pystache
 
 if os.path.isfile("./defaults.py"):
-# Local file, exports:
-#     'interface' = default WLAN interface
-#     'data_dir' = default directory for script and connect data files
-#     'script_dir' = default directory for script and connect data files
+    # Local file, exports:
+    #     'interface' = default WLAN interface
+    #     'data_dir' = default directory for script and connect data files
+    #     'script_dir' = default directory for script and connect data files
     import defaults
 
 pystache_renderer = pystache.Renderer()
 argparser = argparse.ArgumentParser(description = "Creates a new connect script")
 
 argparser.add_argument(
-        "-s", "--ssid",
-        dest = "ssid",
-        default = "",
-        required = True,
-        type = str,
-        help = "SSID for the network to connect to.")
+    "-s", "--ssid",
+    dest = "ssid",
+    default = "",
+    required = True,
+    type = str,
+    help = "SSID for the network to connect to.")
 
 argparser.add_argument(
-        "-p", "--passphrase",
-        dest = "passphrase",
-        default = "",
-        required = False,
-        type = str,
-        help = "Passphrase, if any, for the network.")
+    "-p", "--passphrase",
+    dest = "passphrase",
+    default = "",
+    required = False,
+    type = str,
+    help = "Passphrase, if any, for the network.")
 
 argparser.add_argument(
-        "-o", "--outfile",
-        dest = "outfile",
-        default = sys.stdout,
-        required = False,
-        type = str,
-        help = "Filename base for connect data and connect script.")
+    "-o", "--outfile",
+    dest = "outfile",
+    default = sys.stdout,
+    required = False,
+    type = str,
+    help = "Filename base for connect data and connect script.")
 
 argparser.add_argument(
-        "-i", "--interface",
-        dest = "interface",
-        default = defaults.interface,
-        required = False,
-        type = str,
-        help = "Interface to use for connect script.")
+    "-i", "--interface",
+    dest = "interface",
+    default = defaults.interface,
+    required = False,
+    type = str,
+    help = "Interface to use for connect script.")
 
 argparser.add_argument(
-        "-c", "--connectscript_dir",
-        dest = "script_dir",
-        default = defaults.script_dir,
-        required = False,
-        type = str,
-        help = "Directory to put script files in.")
+    "-c", "--connectscript_dir",
+    dest = "script_dir",
+    default = defaults.script_dir,
+    required = False,
+    type = str,
+    help = "Directory to put script files in.")
 
 argparser.add_argument(
-        "-d", "--datafile_dir",
-        dest = "data_dir",
-        default = defaults.data_dir,
-        required = False,
-        type = str,
-        help = "Directory to put data files in.")
+    "-d", "--datafile_dir",
+    dest = "data_dir",
+    default = defaults.data_dir,
+    required = False,
+    type = str,
+    help = "Directory to put data files in.")
 
 def create_connect_info_file(data_filename, ssid, passphrase):
     if not data_filename.endswith(".conf"):
@@ -74,8 +74,8 @@ def create_connect_info_file(data_filename, ssid, passphrase):
 
     with open(data_filename, "w") as o:
         wpa_supplicant_output = subprocess.Popen(
-                ["wpa_passphrase", ssid, passphrase],
-                stdout=subprocess.PIPE).communicate()[0].decode()
+            ["wpa_passphrase", ssid, passphrase],
+            stdout=subprocess.PIPE).communicate()[0].decode()
         o.write(pystache_renderer.render_path(
             'templates/data.mustache',
             {'wpa_supplicant_output':wpa_supplicant_output}))
